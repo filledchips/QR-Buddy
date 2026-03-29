@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>QR-Buddy</title>
+
+<style>
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+body {
+    background: #f5f7fa;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Container */
+.container {
+    width: 95%;
+    max-width: 900px;
+    margin-top: 20px;
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: clamp(28px, 5vw, 40px);
+}
+
+header p {
+    font-size: clamp(14px, 2vw, 18px);
+    opacity: 0.7;
+}
+
+/* Input Area */
+.input-area {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+input {
+    flex: 1;
+    padding: 12px;
+    font-size: 16px;
+}
+
+button {
+    padding: 12px 16px;
+    cursor: pointer;
+}
+
+/* QR Display */
+.qr-box {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Examples */
+.examples {
+    margin-top: 20px;
+}
+
+.examples ul {
+    padding-left: 20px;
+}
+
+/* Pros Section */
+.pros {
+    margin-top: 20px;
+    background: #fff;
+    padding: 15px;
+    border: 1px solid #ddd;
+}
+
+/* Popup */
+.popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-box {
+    background: white;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+/* Tornado */
+.tornado {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 120px;
+    animation: tornadoMove 1s linear forwards;
+}
+
+@keyframes tornadoMove {
+    0% { top: -150px; }
+    100% { top: 110%; }
+}
+
+/* Red ending */
+body.red {
+    background: darkred;
+    color: white;
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+td, th {
+    border: 1px solid #999;
+    padding: 5px;
+    font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <header>
+        <h1>QR-Buddy</h1>
+        <p>A refined QR code generation experience.</p>
+    </header>
+
+    <div class="input-area">
+        <input id="inputText" placeholder="Enter text...">
+        <button onclick="handleGenerate()">Generate</button>
+    </div>
+
+    <div class="qr-box" id="qrBox"></div>
+
+    <div class="examples">
+        <h3>Examples</h3>
+        <ul>
+            <li>https://example.com</li>
+            <li>Hello World</li>
+            <li>Contact Info</li>
+        </ul>
+    </div>
+
+    <div class="pros">
+        <h3>Why QR-Buddy?</h3>
+        <ul>
+            <li>Elegant and structured interface</li>
+            <li>Adaptive to all screen sizes</li>
+            <li>Enhanced interactive experience</li>
+            <li>Memorable generation workflow</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+let stage = 0;
+
+function resetInput() {
+    document.getElementById("inputText").value = "";
+}
+
+/* QR Generator (simple API) */
+function generateQR(text) {
+    const box = document.getElementById("qrBox");
+    box.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(text)}">`;
+}
+
+/* Tornado */
+function tornadoEffect() {
+    const tornado = document.createElement("div");
+    tornado.className = "tornado";
+    tornado.innerText = "🌪️";
+    document.body.appendChild(tornado);
+
+    setTimeout(() => {
+        tornado.remove();
+    }, 1000);
+}
+
+/* Popup helper */
+function showPopup(content) {
+    const popup = document.createElement("div");
+    popup.className = "popup";
+    popup.innerHTML = `<div class="popup-box">${content}</div>`;
+    document.body.appendChild(popup);
+    return popup;
+}
+
+/* Random string */
+function randomString() {
+    let chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let len = Math.floor(Math.random() * 10) + 1;
+    let str = "";
+    for (let i = 0; i < len; i++) {
+        str += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return str;
+}
+
+/* Main handler */
+function handleGenerate() {
+    let input = document.getElementById("inputText").value;
+
+    if (stage === 0) {
+        tornadoEffect();
+        setTimeout(() => {
+            resetInput();
+        }, 1000);
+        stage++;
+        return;
+    }
+
+    if (stage === 1) {
+        let popup = showPopup(`
+            <h2>AKINATOR</h2>
+            <img src="https://en.akinator.com/assets/img/akitudes_520x650/serein_2.png" width="100%">
+            <p>🤔 Akinator is thinking...</p>
+        `);
+
+        setTimeout(() => {
+            let str = randomString();
+            popup.querySelector(".popup-box").innerHTML += `
+                <p>I dont think that's appropriate, let's try '${str}'</p>
+                <button onclick="this.closest('.popup').remove()">OK</button>
+            `;
+            generateQR(str);
+        }, 2000);
+
+        stage++;
+        return;
+    }
+
+    if (stage === 2) {
+        let popup = showPopup(`
+        <h2>You've hit your QR-Buddy Daily Limit!</h2>
+        <p>To continue using QR-Buddy, you must pay for a subscription.</p>
+        <table>
+        <tr><th>Free</th><th>Basic</th><th>Premium</th></tr>
+        <tr><td>Daily Limit of 1</td><td>Daily Limit of 15</td><td>No daily limit</td></tr>
+        <tr><td>Max usage 0.2</td><td>Max usage 5</td><td>Unlimited</td></tr>
+        <tr><td>No riddles</td><td>1 Riddle</td><td>10 Riddles</td></tr>
+        </table>
+        <select id="plan" onchange="updatePrice()">
+            <option>Free</option>
+            <option>Basic</option>
+            <option>Premium</option>
+        </select>
+        <p id="price">P0.00</p>
+        <button onclick="skipPlan(this)">Skip</button>
+        `);
+
+        stage++;
+        return;
+    }
+
+    if (stage === 3) {
+        let popup = showPopup(`
+        <h2>AGE VERIFICATION</h2>
+        <p>Test your maturity to verify your identity.</p>
+        <img src="https://images-cdn.9gag.com/photo/anj9ZQq_700b.jpg" width="100%">
+        <button onclick="this.closest('.popup').remove()">Skip (i laughed)</button>
+        `);
+
+        stage++;
+        return;
+    }
+
+    if (stage === 4) {
+        let popup = showPopup(`
+        <h2>Verification</h2>
+        <button onclick="proveNotHuman(this)">Prove you're not human</button>
+        `);
+        stage++;
+        return;
+    }
+
+    if (stage === 5) {
+        let popup = showPopup(`
+        <h2>ENTER YOUR USERNAME AND PASSWORD</h2>
+        <input id="user">
+        <input id="pass" type="password">
+        <button onclick="hint()">Hint</button>
+        <button onclick="login(this)">Sign in</button>
+        `);
+        stage++;
+        return;
+    }
+
+    if (stage === 6) {
+        document.body.classList.add("red");
+        showPopup(`<h2>How dare you..</h2><button onclick="this.closest('.popup').remove()">...</button>`);
+        stage++;
+        return;
+    }
+}
+
+/* Plan logic */
+function updatePrice() {
+    let val = document.getElementById("plan").value;
+    let price = document.getElementById("price");
+
+    if (val === "Free") price.innerText = "P0.00";
+    if (val === "Basic") price.innerText = "P0.00 (DISCOUNTED 0%)";
+    if (val === "Premium") price.innerText = "P10000000000000000000000000000000.00 (Discounted 10%)";
+}
+
+function skipPlan(btn) {
+    let val = document.getElementById("plan").value;
+    if (val === "Free") return;
+    btn.closest(".popup").remove();
+}
+
+/* CAPTCHA */
+function proveNotHuman(btn) {
+    btn.innerText = "Processing...";
+    setTimeout(() => {
+        btn.innerText = "You are NOT human ✔";
+        setTimeout(() => btn.closest(".popup").remove(), 1000);
+    }, 1500);
+}
+
+/* Login */
+function hint() {
+    alert(`Riddle me this,
+Yappers talk and talk;
+What has 4 legs and looks like a chair,
+but never walks?
+The username and password is the answer.`);
+}
+
+function login(btn) {
+    let u = document.getElementById("user").value.toLowerCase();
+    let p = document.getElementById("pass").value.toLowerCase();
+
+    if (["chair","a chair","🪑"].includes(u) || ["chair","a chair","🪑"].includes(p)) {
+        btn.closest(".popup").remove();
+    }
+}
+</script>
+
+</body>
+</html>
